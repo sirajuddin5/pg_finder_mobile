@@ -41,4 +41,21 @@ class AppStrings {
   static const String rentInvoices = 'Rent Invoices';
   static const String complaints = 'Maintenance';
   static const String raiseComplaint = 'Raise Ticket';
+
+  // Owner Portal
+  static const String ownerDashboard = 'Owner Dashboard';
+  static const String myProperties = 'My Properties';
+  static const String addProperty = 'Add New PG';
+  static const String addRoom = 'Add Room';
+  static const String manageBeds = 'Manage Beds';
+  static const String propertyInvoices = 'Property Invoices';
+
+  // Admin Portal
+  static const String adminConsole = 'Admin Command Center';
+  static const String pendingApprovals = 'PG Approvals';
+  static const String kycVerification = 'KYC Verifications';
+  static const String monthlyInvoicing = 'Monthly Invoicing Engine';
+  static const String globalComplaints = 'Platform Complaints';
+  static const String userDirectory = 'User Directory';
+  static const String systemHealth = 'System Health';
 }

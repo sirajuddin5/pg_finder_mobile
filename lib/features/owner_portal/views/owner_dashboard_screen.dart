@@ -378,37 +378,79 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                               bottomRight: Radius.circular(16),
                             ),
                           ),
-                          child: Row(
+                          child: Column(
                             children: [
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    context.push('/owner/properties/${prop.id}/add-room', extra: {
-                                      'propertyId': prop.id,
-                                      'propertyTitle': prop.title,
-                                    });
-                                  },
-                                  icon: const Icon(Icons.add, size: 16),
-                                  label: const Text('Add Room'),
-                                  style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        context.push('/owner/properties/${prop.id}/add-room', extra: {
+                                          'propertyId': prop.id,
+                                          'propertyTitle': prop.title,
+                                        });
+                                      },
+                                      icon: const Icon(Icons.add, size: 16),
+                                      label: const Text('Add Room'),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        context.push('/owner/properties/${prop.id}/beds', extra: {
+                                          'propertyId': prop.id,
+                                          'propertyTitle': prop.title,
+                                        });
+                                      },
+                                      icon: const Icon(Icons.bed_rounded, size: 16),
+                                      label: const Text('Beds Status'),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () => context.push('/property/${prop.id}'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.primary,
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(vertical: 10),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      onPressed: () {
+                                        context.push('/owner/properties/${prop.id}/invoices', extra: {
+                                          'propertyId': prop.id,
+                                          'propertyTitle': prop.title,
+                                        });
+                                      },
+                                      icon: const Icon(Icons.receipt_long_rounded, size: 16),
+                                      label: const Text('Rent Invoices'),
+                                      style: OutlinedButton.styleFrom(
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                    ),
                                   ),
-                                  icon: const Icon(Icons.remove_red_eye_outlined, size: 16),
-                                  label: const Text('View PG'),
-                                ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => context.push('/property/${prop.id}'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primary,
+                                        foregroundColor: Colors.white,
+                                        padding: const EdgeInsets.symmetric(vertical: 8),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                      ),
+                                      icon: const Icon(Icons.remove_red_eye_outlined, size: 16),
+                                      label: const Text('View PG'),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
@@ -512,12 +554,51 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
-                        context.read<OwnerBloc>().add(
-                              UpdateComplaintStatusRequested(
-                                complaintId: complaint.id,
-                                status: 'RESOLVED',
+                        final notesController = TextEditingController();
+                        showDialog(
+                          context: context,
+                          builder: (dialogCtx) => AlertDialog(
+                            title: const Text('Resolve Complaint Ticket'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Mark "${complaint.title}" as resolved?'),
+                                const SizedBox(height: 12),
+                                TextField(
+                                  controller: notesController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Resolution Notes (Optional)',
+                                    hintText: 'e.g., Plumber fixed tap washer',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(dialogCtx),
+                                child: const Text('Cancel'),
                               ),
-                            );
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.success,
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(dialogCtx);
+                                  context.read<OwnerBloc>().add(
+                                        UpdateComplaintStatusRequested(
+                                          complaintId: complaint.id,
+                                          status: 'RESOLVED',
+                                          resolutionNotes: notesController.text.trim(),
+                                        ),
+                                      );
+                                },
+                                child: const Text('Resolve', style: TextStyle(color: Colors.white)),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,

@@ -16,6 +16,9 @@ class OwnerBloc extends Bloc<OwnerEvent, OwnerState> {
     on<LoadOwnerComplaintsRequested>(_onLoadComplaints);
     on<CreatePropertySubmitted>(_onCreateProperty);
     on<CreateRoomSubmitted>(_onCreateRoom);
+    on<UpdateBedStatusRequested>(_onUpdateBedStatus);
+    on<LoadPropertyBedsRequested>(_onLoadPropertyBeds);
+    on<LoadPropertyInvoicesRequested>(_onLoadPropertyInvoices);
     on<UpdateComplaintStatusRequested>(_onUpdateComplaintStatus);
   }
 
@@ -90,12 +93,62 @@ class OwnerBloc extends Bloc<OwnerEvent, OwnerState> {
     }
   }
 
+  Future<void> _onUpdateBedStatus(
+    UpdateBedStatusRequested event,
+    Emitter<OwnerState> emit,
+  ) async {
+    try {
+      final updatedBed = await _ownerRepository.updateBedStatus(event.bedId, event.status);
+      emit(BedStatusUpdatedSuccess(
+        bed: updatedBed,
+        message: 'Bed ${updatedBed.bedIdentifier} marked as ${updatedBed.status}',
+      ));
+      if (event.propertyId != null) {
+        add(LoadPropertyBedsRequested(propertyId: event.propertyId!));
+      } else {
+        add(LoadOwnerDashboardRequested());
+      }
+    } catch (e) {
+      emit(OwnerError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onLoadPropertyBeds(
+    LoadPropertyBedsRequested event,
+    Emitter<OwnerState> emit,
+  ) async {
+    emit(OwnerLoading());
+    try {
+      final property = await _ownerRepository.getPropertyDetails(event.propertyId);
+      emit(PropertyBedsLoaded(property));
+    } catch (e) {
+      emit(OwnerError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onLoadPropertyInvoices(
+    LoadPropertyInvoicesRequested event,
+    Emitter<OwnerState> emit,
+  ) async {
+    emit(OwnerLoading());
+    try {
+      final invoices = await _ownerRepository.getPropertyInvoices(event.propertyId);
+      emit(PropertyInvoicesLoaded(invoices));
+    } catch (e) {
+      emit(OwnerError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
   Future<void> _onUpdateComplaintStatus(
     UpdateComplaintStatusRequested event,
     Emitter<OwnerState> emit,
   ) async {
     try {
-      await _ownerRepository.updateComplaintStatus(event.complaintId, event.status);
+      await _ownerRepository.updateComplaintStatus(
+        event.complaintId,
+        event.status,
+        resolutionNotes: event.resolutionNotes,
+      );
       add(LoadOwnerDashboardRequested());
     } catch (e) {
       emit(OwnerError(e.toString().replaceAll('Exception: ', '')));

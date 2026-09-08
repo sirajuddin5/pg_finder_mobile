@@ -5,6 +5,8 @@ import '../../discovery/models/property_summary_model.dart';
 import '../../property/models/property_detail_model.dart';
 import '../../property/models/room_model.dart';
 import '../../tenant_portal/models/complaint_model.dart';
+import '../../property/models/bed_model.dart';
+import '../../tenant_portal/models/invoice_model.dart';
 import '../models/create_property_dto.dart';
 import '../models/create_room_dto.dart';
 
@@ -23,6 +25,17 @@ class OwnerRepository {
           [];
     } on DioException catch (e) {
       final message = e.response?.data?['message'] ?? 'Failed to load owner properties';
+      throw Exception(message);
+    }
+  }
+
+  Future<PropertyDetailModel> getPropertyDetails(int propertyId) async {
+    try {
+      final response = await _dio.get('${ApiConstants.propertyDetails}/$propertyId');
+      final data = response.data['data'];
+      return PropertyDetailModel.fromJson(data);
+    } on DioException catch (e) {
+      final message = e.response?.data?['message'] ?? 'Failed to load property details';
       throw Exception(message);
     }
   }
@@ -55,6 +68,20 @@ class OwnerRepository {
     }
   }
 
+  Future<BedModel> updateBedStatus(int bedId, String status) async {
+    try {
+      final response = await _dio.patch(
+        '${ApiConstants.updateBedStatus}/$bedId/status',
+        data: {'status': status},
+      );
+      final data = response.data['data'];
+      return BedModel.fromJson(data);
+    } on DioException catch (e) {
+      final message = e.response?.data?['message'] ?? 'Failed to update bed status';
+      throw Exception(message);
+    }
+  }
+
   Future<List<ComplaintModel>> getOwnerComplaints() async {
     try {
       final response = await _dio.get(ApiConstants.complaints);
@@ -72,16 +99,38 @@ class OwnerRepository {
     }
   }
 
-  Future<ComplaintModel> updateComplaintStatus(int complaintId, String status) async {
+  Future<ComplaintModel> updateComplaintStatus(
+    int complaintId,
+    String status, {
+    String? resolutionNotes,
+  }) async {
     try {
+      final payload = <String, dynamic>{'status': status};
+      if (resolutionNotes != null && resolutionNotes.isNotEmpty) {
+        payload['resolutionNotes'] = resolutionNotes;
+      }
       final response = await _dio.patch(
         '${ApiConstants.complaints}/$complaintId/status',
-        data: {'status': status},
+        data: payload,
       );
       final data = response.data['data'];
       return ComplaintModel.fromJson(data);
     } on DioException catch (e) {
       final message = e.response?.data?['message'] ?? 'Failed to update complaint';
+      throw Exception(message);
+    }
+  }
+
+  Future<List<InvoiceModel>> getPropertyInvoices(int propertyId) async {
+    try {
+      final response = await _dio.get('${ApiConstants.propertyInvoices}/$propertyId');
+      final data = response.data['data'] as List<dynamic>?;
+      return data
+              ?.map((e) => InvoiceModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [];
+    } on DioException catch (e) {
+      final message = e.response?.data?['message'] ?? 'Failed to load property invoices';
       throw Exception(message);
     }
   }

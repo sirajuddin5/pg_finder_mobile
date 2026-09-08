@@ -28,6 +28,18 @@ class ApiConstants {
   // Invoices & Complaints
   static const String myInvoices = '/invoices/my-invoices';
   static const String initiateInvoicePayment = '/invoices';
+  static const String propertyInvoices = '/invoices/property';
+  static const String adminGenerateMonthlyInvoices = '/invoices/admin/generate-monthly';
   static const String complaints = '/complaints';
   static const String myComplaints = '/complaints/my-complaints';
+
+  // Room & Bed Inventory
+  static const String updateBedStatus = '/beds';
+
+  // Admin Endpoints
+  static const String adminPendingProperties = '/admin/properties/pending';
+  static const String adminProperties = '/admin/properties';
+  static const String kyc = '/kyc';
+  static const String users = '/users';
+  static const String health = '/health';
 }

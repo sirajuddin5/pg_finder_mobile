@@ -6,6 +6,8 @@ import 'core/network/dio_client.dart';
 import 'core/network/token_storage.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/admin_portal/bloc/admin_bloc.dart';
+import 'features/admin_portal/repositories/admin_repository.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
 import 'features/auth/repositories/auth_repository.dart';
@@ -27,7 +29,6 @@ void main() {
 }
 
 class PgFinderApp extends StatelessWidget {
-  
   const PgFinderApp({super.key});
 
   @override
@@ -42,6 +43,7 @@ class PgFinderApp extends StatelessWidget {
     final bookingRepository = BookingRepository(dio: dio);
     final tenantPortalRepository = TenantPortalRepository(dio: dio);
     final ownerRepository = OwnerRepository(dio: dio);
+    final adminRepository = AdminRepository(dio: dio);
 
     final authBloc = AuthBloc(authRepository: authRepository)..add(CheckAuthStatusRequested());
     final router = AppRouter.createRouter(authBloc);
@@ -63,6 +65,9 @@ class PgFinderApp extends StatelessWidget {
         ),
         BlocProvider<OwnerBloc>(
           create: (_) => OwnerBloc(ownerRepository: ownerRepository),
+        ),
+        BlocProvider<AdminBloc>(
+          create: (_) => AdminBloc(adminRepository: adminRepository),
         ),
       ],
       child: MaterialApp.router(

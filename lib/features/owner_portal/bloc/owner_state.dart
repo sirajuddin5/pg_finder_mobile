@@ -1,8 +1,10 @@
 import 'package:equatable/equatable.dart';
 import '../../discovery/models/property_summary_model.dart';
+import '../../property/models/bed_model.dart';
 import '../../property/models/property_detail_model.dart';
 import '../../property/models/room_model.dart';
 import '../../tenant_portal/models/complaint_model.dart';
+import '../../tenant_portal/models/invoice_model.dart';
 
 abstract class OwnerState extends Equatable {
   const OwnerState();
@@ -47,6 +49,37 @@ class RoomCreatedSuccess extends OwnerState {
 
   @override
   List<Object?> get props => [room];
+}
+
+class BedStatusUpdatedSuccess extends OwnerState {
+  final BedModel bed;
+  final String message;
+
+  const BedStatusUpdatedSuccess({
+    required this.bed,
+    required this.message,
+  });
+
+  @override
+  List<Object?> get props => [bed, message];
+}
+
+class PropertyBedsLoaded extends OwnerState {
+  final PropertyDetailModel property;
+
+  const PropertyBedsLoaded(this.property);
+
+  @override
+  List<Object?> get props => [property];
+}
+
+class PropertyInvoicesLoaded extends OwnerState {
+  final List<InvoiceModel> invoices;
+
+  const PropertyInvoicesLoaded(this.invoices);
+
+  @override
+  List<Object?> get props => [invoices];
 }
 
 class OwnerError extends OwnerState {
