@@ -12,6 +12,8 @@ import 'features/booking/bloc/booking_bloc.dart';
 import 'features/booking/repositories/booking_repository.dart';
 import 'features/discovery/bloc/discovery_bloc.dart';
 import 'features/discovery/repositories/discovery_repository.dart';
+import 'features/owner_portal/bloc/owner_bloc.dart';
+import 'features/owner_portal/repositories/owner_repository.dart';
 import 'features/property/bloc/property_detail_bloc.dart';
 import 'features/property/repositories/property_repository.dart';
 import 'features/tenant_portal/bloc/tenant_portal_bloc.dart';
@@ -37,6 +39,7 @@ class PgFinderApp extends StatelessWidget {
     final propertyRepository = PropertyRepository(dio: dio);
     final bookingRepository = BookingRepository(dio: dio);
     final tenantPortalRepository = TenantPortalRepository(dio: dio);
+    final ownerRepository = OwnerRepository(dio: dio);
 
     final authBloc = AuthBloc(authRepository: authRepository)..add(CheckAuthStatusRequested());
     final router = AppRouter.createRouter(authBloc);
@@ -55,6 +58,9 @@ class PgFinderApp extends StatelessWidget {
         ),
         BlocProvider<TenantPortalBloc>(
           create: (_) => TenantPortalBloc(tenantPortalRepository: tenantPortalRepository),
+        ),
+        BlocProvider<OwnerBloc>(
+          create: (_) => OwnerBloc(ownerRepository: ownerRepository),
         ),
       ],
       child: MaterialApp.router(

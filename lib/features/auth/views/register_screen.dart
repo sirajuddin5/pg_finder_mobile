@@ -62,7 +62,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is Authenticated) {
-              context.go('/discovery');
+              if (state.user.isOwner || state.user.isAdmin) {
+                context.go('/owner-dashboard');
+              } else {
+                context.go('/discovery');
+              }
             } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(

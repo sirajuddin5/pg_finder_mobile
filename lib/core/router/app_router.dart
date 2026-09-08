@@ -6,6 +6,9 @@ import '../../features/auth/views/login_screen.dart';
 import '../../features/auth/views/register_screen.dart';
 import '../../features/booking/views/booking_checkout_sheet.dart';
 import '../../features/discovery/views/discovery_home_screen.dart';
+import '../../features/owner_portal/views/add_property_screen.dart';
+import '../../features/owner_portal/views/add_room_screen.dart';
+import '../../features/owner_portal/views/owner_dashboard_screen.dart';
 import '../../features/property/models/bed_model.dart';
 import '../../features/property/models/property_detail_model.dart';
 import '../../features/property/models/room_model.dart';
@@ -54,6 +57,23 @@ class AppRouter {
         GoRoute(
           path: '/tenant-portal',
           builder: (context, state) => const TenantDashboardScreen(),
+        ),
+        GoRoute(
+          path: '/owner-dashboard',
+          builder: (context, state) => const OwnerDashboardScreen(),
+        ),
+        GoRoute(
+          path: '/owner/add-property',
+          builder: (context, state) => const AddPropertyScreen(),
+        ),
+        GoRoute(
+          path: '/owner/properties/:id/add-room',
+          builder: (context, state) {
+            final id = int.tryParse(state.pathParameters['id'] ?? '1') ?? 1;
+            final extra = state.extra as Map<String, dynamic>? ?? {};
+            final title = extra['propertyTitle'] as String? ?? 'Property #$id';
+            return AddRoomScreen(propertyId: id, propertyTitle: title);
+          },
         ),
       ],
       errorBuilder: (context, state) => Scaffold(

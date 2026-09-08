@@ -18,10 +18,6 @@ class AuthRepository {
     required String password,
   }) async {
     try {
-      print("request body: ${{
-        'identifier': email,
-        'password': password,
-      }}");
       final response = await _dio.post(
         ApiConstants.login,
         data: {
@@ -29,8 +25,6 @@ class AuthRepository {
           'password': password,
         },
       );
-
-      print("response data: ${response.data}");
 
       final data = response.data['data'];
       final tokens = AuthTokensModel.fromJson(data);
@@ -45,8 +39,6 @@ class AuthRepository {
 
       return {'user': user, 'tokens': tokens};
     } on DioException catch (e) {
-      print("DioException: ${e}");
-      print("DioException response: ${e.response?.data}");
       final message = e.response?.data?['message'] ?? 'Login failed. Please check your credentials.';
       throw Exception(message);
     }

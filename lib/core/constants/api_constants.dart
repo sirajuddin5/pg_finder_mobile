@@ -15,6 +15,8 @@ class ApiConstants {
   // Discovery & Properties
   static const String propertySearch = '/properties/search';
   static const String propertyDetails = '/properties';
+  static const String myProperties = '/properties/my-properties';
+  static const String createProperty = '/properties';
   static const String amenities = '/amenities';
 
   // Bookings & Payments
