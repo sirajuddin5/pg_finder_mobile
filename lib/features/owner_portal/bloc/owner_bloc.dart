@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../tenant_portal/models/complaint_model.dart';
 import '../repositories/owner_repository.dart';
 import 'owner_event.dart';
 import 'owner_state.dart';
@@ -22,7 +23,12 @@ class OwnerBloc extends Bloc<OwnerEvent, OwnerState> {
     emit(OwnerLoading());
     try {
       final properties = await _ownerRepository.getMyProperties();
-      final complaints = await _ownerRepository.getOwnerComplaints();
+      List<ComplaintModel> complaints = [];
+      try {
+        complaints = await _ownerRepository.getOwnerComplaints();
+      } catch (_) {
+        complaints = [];
+      }
       emit(OwnerDashboardLoaded(properties: properties, complaints: complaints));
     } catch (e) {
       emit(OwnerError(e.toString().replaceAll('Exception: ', '')));
