@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'core/bloc/app_bloc_observer.dart';
 import 'core/constants/app_strings.dart';
 import 'core/network/dio_client.dart';
 import 'core/network/token_storage.dart';
@@ -21,6 +22,7 @@ import 'features/tenant_portal/repositories/tenant_portal_repository.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer = AppBlocObserver();
   runApp(const PgFinderApp());
 }
 

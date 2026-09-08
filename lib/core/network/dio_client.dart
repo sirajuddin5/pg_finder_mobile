@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../constants/api_constants.dart';
 import 'auth_interceptor.dart';
+import 'logging_interceptor.dart';
 import 'token_storage.dart';
 
 class DioClient {
@@ -22,6 +23,9 @@ class DioClient {
       ),
     );
 
-    dio.interceptors.add(AuthInterceptor(TokenStorage(), dio));
+    dio.interceptors.addAll([
+      AuthInterceptor(TokenStorage(), dio),
+      LoggingInterceptor(),
+    ]);
   }
 }
