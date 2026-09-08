@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../discovery/models/property_summary_model.dart';
 import '../../tenant_portal/models/complaint_model.dart';
 import '../repositories/owner_repository.dart';
 import 'owner_event.dart';
@@ -11,6 +12,8 @@ class OwnerBloc extends Bloc<OwnerEvent, OwnerState> {
       : _ownerRepository = ownerRepository,
         super(OwnerInitial()) {
     on<LoadOwnerDashboardRequested>(_onLoadDashboard);
+    on<LoadOwnerPropertiesRequested>(_onLoadProperties);
+    on<LoadOwnerComplaintsRequested>(_onLoadComplaints);
     on<CreatePropertySubmitted>(_onCreateProperty);
     on<CreateRoomSubmitted>(_onCreateRoom);
     on<UpdateComplaintStatusRequested>(_onUpdateComplaintStatus);
@@ -20,18 +23,42 @@ class OwnerBloc extends Bloc<OwnerEvent, OwnerState> {
     LoadOwnerDashboardRequested event,
     Emitter<OwnerState> emit,
   ) async {
-    emit(OwnerLoading());
+    add(LoadOwnerPropertiesRequested());
+  }
+
+  Future<void> _onLoadProperties(
+    LoadOwnerPropertiesRequested event,
+    Emitter<OwnerState> emit,
+  ) async {
+    final currentComplaints = state is OwnerDashboardLoaded
+        ? (state as OwnerDashboardLoaded).complaints
+        : <ComplaintModel>[];
+
+    if (state is! OwnerDashboardLoaded) {
+      emit(OwnerLoading());
+    }
+
     try {
       final properties = await _ownerRepository.getMyProperties();
-      List<ComplaintModel> complaints = [];
-      try {
-        complaints = await _ownerRepository.getOwnerComplaints();
-      } catch (_) {
-        complaints = [];
-      }
-      emit(OwnerDashboardLoaded(properties: properties, complaints: complaints));
+      emit(OwnerDashboardLoaded(properties: properties, complaints: currentComplaints));
     } catch (e) {
       emit(OwnerError(e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onLoadComplaints(
+    LoadOwnerComplaintsRequested event,
+    Emitter<OwnerState> emit,
+  ) async {
+    final currentProperties = state is OwnerDashboardLoaded
+        ? (state as OwnerDashboardLoaded).properties
+        : <PropertySummaryModel>[];
+
+    try {
+      final complaints = await _ownerRepository.getOwnerComplaints();
+      emit(OwnerDashboardLoaded(properties: currentProperties, complaints: complaints));
+    } catch (_) {
+      emit(OwnerDashboardLoaded(properties: currentProperties, complaints: const []));
     }
   }
 

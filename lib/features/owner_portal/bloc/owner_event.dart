@@ -11,6 +11,10 @@ abstract class OwnerEvent extends Equatable {
 
 class LoadOwnerDashboardRequested extends OwnerEvent {}
 
+class LoadOwnerPropertiesRequested extends OwnerEvent {}
+
+class LoadOwnerComplaintsRequested extends OwnerEvent {}
+
 class CreatePropertySubmitted extends OwnerEvent {
   final CreatePropertyDto dto;
 

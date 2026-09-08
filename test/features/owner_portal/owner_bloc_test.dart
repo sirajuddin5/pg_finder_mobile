@@ -87,20 +87,34 @@ void main() {
     });
 
     blocTest<OwnerBloc, OwnerState>(
-      'emits [OwnerLoading, OwnerDashboardLoaded] when LoadOwnerDashboardRequested succeeds',
+      'emits [OwnerLoading, OwnerDashboardLoaded] when LoadOwnerPropertiesRequested succeeds',
       build: () {
         when(() => mockOwnerRepository.getMyProperties())
             .thenAnswer((_) async => [testPropertySummary]);
+        return ownerBloc;
+      },
+      act: (bloc) => bloc.add(LoadOwnerPropertiesRequested()),
+      expect: () => [
+        OwnerLoading(),
+        const OwnerDashboardLoaded(
+          properties: [testPropertySummary],
+          complaints: [],
+        ),
+      ],
+    );
+
+    blocTest<OwnerBloc, OwnerState>(
+      'emits [OwnerDashboardLoaded] with complaints when LoadOwnerComplaintsRequested succeeds',
+      build: () {
         when(() => mockOwnerRepository.getOwnerComplaints())
             .thenAnswer((_) async => [testComplaint]);
         return ownerBloc;
       },
-      act: (bloc) => bloc.add(LoadOwnerDashboardRequested()),
+      act: (bloc) => bloc.add(LoadOwnerComplaintsRequested()),
       expect: () => [
-        OwnerLoading(),
-        OwnerDashboardLoaded(
-          properties: const [testPropertySummary],
-          complaints: const [testComplaint],
+        const OwnerDashboardLoaded(
+          properties: [],
+          complaints: [testComplaint],
         ),
       ],
     );
@@ -128,8 +142,6 @@ void main() {
             .thenAnswer((_) async => testPropertyDetail);
         when(() => mockOwnerRepository.getMyProperties())
             .thenAnswer((_) async => [testPropertySummary]);
-        when(() => mockOwnerRepository.getOwnerComplaints())
-            .thenAnswer((_) async => [testComplaint]);
         return ownerBloc;
       },
       act: (bloc) => bloc.add(const CreatePropertySubmitted(
@@ -154,9 +166,9 @@ void main() {
         OwnerLoading(),
         const PropertyCreatedSuccess(testPropertyDetail),
         OwnerLoading(),
-        OwnerDashboardLoaded(
-          properties: const [testPropertySummary],
-          complaints: const [testComplaint],
+        const OwnerDashboardLoaded(
+          properties: [testPropertySummary],
+          complaints: [],
         ),
       ],
     );
@@ -179,8 +191,6 @@ void main() {
             .thenAnswer((_) async => testRoom);
         when(() => mockOwnerRepository.getMyProperties())
             .thenAnswer((_) async => [testPropertySummary]);
-        when(() => mockOwnerRepository.getOwnerComplaints())
-            .thenAnswer((_) async => [testComplaint]);
         return ownerBloc;
       },
       act: (bloc) => bloc.add(const CreateRoomSubmitted(
@@ -201,9 +211,9 @@ void main() {
         OwnerLoading(),
         const RoomCreatedSuccess(testRoom),
         OwnerLoading(),
-        OwnerDashboardLoaded(
-          properties: const [testPropertySummary],
-          complaints: const [testComplaint],
+        const OwnerDashboardLoaded(
+          properties: [testPropertySummary],
+          complaints: [],
         ),
       ],
     );
@@ -222,8 +232,6 @@ void main() {
                 ));
         when(() => mockOwnerRepository.getMyProperties())
             .thenAnswer((_) async => [testPropertySummary]);
-        when(() => mockOwnerRepository.getOwnerComplaints())
-            .thenAnswer((_) async => [testComplaint]);
         return ownerBloc;
       },
       act: (bloc) => bloc.add(const UpdateComplaintStatusRequested(
@@ -232,9 +240,9 @@ void main() {
       )),
       expect: () => [
         OwnerLoading(),
-        OwnerDashboardLoaded(
-          properties: const [testPropertySummary],
-          complaints: const [testComplaint],
+        const OwnerDashboardLoaded(
+          properties: [testPropertySummary],
+          complaints: [],
         ),
       ],
     );

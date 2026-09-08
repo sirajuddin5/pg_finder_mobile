@@ -23,7 +23,7 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<OwnerBloc>().add(LoadOwnerDashboardRequested());
+    context.read<OwnerBloc>().add(LoadOwnerPropertiesRequested());
   }
 
   @override
@@ -67,7 +67,11 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           } else if (state is OwnerError) {
             return ErrorView(
               message: state.message,
-              onRetry: () => context.read<OwnerBloc>().add(LoadOwnerDashboardRequested()),
+              onRetry: () => context.read<OwnerBloc>().add(
+                    _selectedTabIndex == 0
+                        ? LoadOwnerPropertiesRequested()
+                        : LoadOwnerComplaintsRequested(),
+                  ),
             );
           } else if (state is OwnerDashboardLoaded) {
             return _selectedTabIndex == 0
@@ -88,7 +92,14 @@ class _OwnerDashboardScreenState extends State<OwnerDashboardScreen> {
           : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTabIndex,
-        onTap: (index) => setState(() => _selectedTabIndex = index),
+        onTap: (index) {
+          setState(() => _selectedTabIndex = index);
+          if (index == 1) {
+            context.read<OwnerBloc>().add(LoadOwnerComplaintsRequested());
+          } else {
+            context.read<OwnerBloc>().add(LoadOwnerPropertiesRequested());
+          }
+        },
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.textMuted,
         backgroundColor: Colors.white,
